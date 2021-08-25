@@ -6,7 +6,7 @@
   --color-high-text: #ff5777;
   --color-tint: #ff8198;
   --color-background: #fff;
-  --font-size: 14px;
+  --font-size: 0.1867rem /* 14/75 */;
   --line-height: 1.5;
 }
 

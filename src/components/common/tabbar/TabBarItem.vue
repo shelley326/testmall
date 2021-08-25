@@ -10,9 +10,6 @@
     <div :style="activeStyle">
       <slot name="item-text"></slot>
     </div>
-
-    <!-- <img src="../../assets/img/tabbar/home.svg" />
-    <div>首页</div> -->
   </div>
 </template>
 
@@ -23,8 +20,8 @@ export default {
     path: String,
     activeColor: {
       type: String,
-      default: "red",
-    },
+      default: "red"
+    }
   },
   data() {
     return {
@@ -41,13 +38,13 @@ export default {
     },
     activeStyle() {
       return this.isActive ? { color: this.activeColor } : {};
-    },
+    }
   },
   methods: {
     itemClick() {
       this.$router.replace(this.path);
-    },
-  },
+    }
+  }
 };
 </script>
 
