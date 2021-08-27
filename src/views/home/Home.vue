@@ -24,7 +24,7 @@
       <tab-control :titles="['流行', '新款', '精选']" @tabClick="tabClick" ref="tabControl2" />
       <good-list :goods="showGoods" />
     </scroll>
-    <back-top @click.native="backClick" v-show="isShowBackTop" />
+    <back-top @click.native="backTop" v-show="isShowBackTop" />
   </div>
 </template>
 
@@ -37,10 +37,9 @@ import NavBar from "components/common/navbar/NavBar";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodList from "components/content/goods/GoodsList";
 import Scroll from "components/common/scroll/Scroll";
-import BackTop from "components/content/backTop/BackTop";
 
 import { getHomeMultidata, getHomeGoods } from "network/home";
-import { debounce } from "common/utils";
+import { itemListnerMixin, backTopMixin } from "common/mixin";
 
 export default {
   name: "Home",
@@ -52,9 +51,9 @@ export default {
     NavBar,
     TabControl,
     GoodList,
-    Scroll,
-    BackTop
+    Scroll
   },
+  mixins: [itemListnerMixin, backTopMixin],
   //数据定义
   data() {
     return {
@@ -66,9 +65,9 @@ export default {
         sell: { page: 0, list: [] }
       },
       currentType: "pop",
-      isShowBackTop: false,
       tabOffsetTop: 0,
-      isTabFixed: false
+      isTabFixed: false,
+      saveY: 0
     };
   },
   //计算属性
@@ -76,6 +75,22 @@ export default {
     showGoods() {
       return this.goods[this.currentType].list;
     }
+  },
+  destroyed() {
+    // console.log("destroyed");
+  },
+  activated() {
+    // console.log("activated");
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
+    // this.$refs.scroll.refresh();
+    this.newRefresh();
+  },
+  deactivated() {
+    //保存Y值
+    this.saveY = this.$refs.scroll.getScrollY();
+    // console.log("deactivated");
+    // 取消全局事件的监听
+    this.$bus.$off("itemImageLoad", this.itemImgListener);
   },
   //初始化数据
   created() {
@@ -90,11 +105,9 @@ export default {
   //挂载
   mounted() {
     //1.图片加载完成的事件监听
-    const refresh = debounce(this.$refs.scroll.refresh);
-
-    this.$bus.$on("itemImageLoad", () => {
-      refresh();
-    });
+    // const refresh = debounce(this.$refs.scroll.refresh);
+    //this.$refs.scroll.refresh对这个函数进行防抖操作
+    // this.tabClick(0);
   },
   //方法
   methods: {
@@ -113,24 +126,31 @@ export default {
           this.currentType = "sell";
           break;
       }
-      this.$refs.tabControl1.currentIndex = index;
-      this.$refs.tabControl2.currentIndex = index;
+      //让两个TabControl的currentIndex保持一致
+      //1.先执行mounted，再执行tabClick方法
+      /* this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index; */
+      //2.直接判断是否为undefined再操作
+      if (this.$refs.tabControl1.currentType !== undefined) {
+        this.$refs.tabControl1.currentIndex = index;
+        this.$refs.tabControl2.currentIndex = index;
+      }
     },
-    backClick() {
-      this.$refs.scroll.scrollTo(0, 0);
-    },
+    // backClick() {
+    //   this.$refs.scroll.scrollTo(0, 0);
+    // },
     contentScroll(position) {
-      // 判断BackTop是否显示
-      this.isShowBackTop = -position.y > 1000;
       // 决定tabControl是否吸顶(position:fixed)
       this.isTabFixed = -position.y > this.tabOffsetTop;
+      // 判断BackTop是否显示
+      this.listenShowBackTop(position);
     },
     loadMore() {
       // console.log("加载更多");
       this.getHomeGoods(this.currentType);
     },
     swiperImageLoad() {
-      // console.log(this.$refs.tabControl.$el.offsetTop);
+      // console.log(this.$refs.tabControl2.$el.offsetTop);
       this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
 
