@@ -1,17 +1,17 @@
 <template>
   <div id="shop-item">
     <div class="item-selector">
-      <CheckButton :is-checked="itemInfo.checked" @click.native="checkClick" />
+      <CheckButton :is-checked="product.checked" @click.native="checkClick" />
     </div>
     <div class="item-img">
-      <img :src="itemInfo.image" alt="商品图片" />
+      <img :src="product.image" alt="商品图片" />
     </div>
     <div class="item-info">
-      <div class="item-title">{{itemInfo.title}}</div>
-      <div class="item-desc">商品描述: {{itemInfo.desc}}</div>
+      <div class="item-title">{{product.title}}</div>
+      <div class="item-desc">商品描述: {{product.desc}}</div>
       <div class="info-bottom">
-        <div class="item-price left">¥{{itemInfo.price}}</div>
-        <div class="item-count right">x{{itemInfo.count}}</div>
+        <div class="item-price left">¥{{product.price}}</div>
+        <div class="item-count right">x{{product.count}}</div>
       </div>
     </div>
   </div>
@@ -26,7 +26,7 @@ export default {
     CheckButton
   },
   props: {
-    itemInfo: {
+    product: {
       type: Object,
       default() {
         return {};
@@ -35,9 +35,7 @@ export default {
   },
   methods: {
     checkClick() {
-      // console.log(!this.itemInfo.checked);
-
-      this.itemInfo.checked = !this.itemInfo.checked;
+      this.product.checked = !this.product.checked;
     }
   }
 };

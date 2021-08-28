@@ -54,7 +54,7 @@ export default {
 
       // 2.开启定时器
       this.startTimer();
-    }, 300);
+    }, 3000);
   },
   methods: {
     /**

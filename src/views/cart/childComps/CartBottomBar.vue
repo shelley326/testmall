@@ -1,6 +1,6 @@
 <template>
   <div class="bottom-menu">
-    <CheckButton class="select-all"></CheckButton>
+    <CheckButton class="select-all" :is-checked="isSelectAll" @click.native="checkClick"></CheckButton>
     <span>全选</span>
     <span class="total-price">合计: {{totalPrice}}</span>
     <span class="buy-product">去计算({{checkLength}})</span>
@@ -34,6 +34,49 @@ export default {
     },
     checkLength() {
       return this.cartList.filter(item => item.checked).length;
+    },
+    isSelectAll() {
+      // 方法一：使用filter
+      // return !this.cartList.filter(item => !item.checked).length;
+      // 方法二：使用find
+      //  return !this.cartList.find(item => !item.checked);
+      //方法三:for循环
+      if (this.cartList.length === 0) return false;
+      for (let item of this.cartList) {
+        if (!item.checked) {
+          return false;
+        }
+      }
+      return true;
+    }
+  },
+  methods: {
+    checkClick() {
+      // 第一种
+      /* if (this.isSelectAll) {
+        this.cartList.forEach(item => (item.checked = false));
+      } else {
+        this.cartList.forEach(item => (item.checked = true));
+      } */
+
+      this.cartList.forEach(item => (item.checked = !this.isSelectAll));
+
+      // 第二种
+      /* // 1.判断是否有未选中的按钮
+      let isSelectAll = this.$store.getters.cartList.find(
+        item => !item.checked
+      );
+
+      // 2.有未选中的内容, 则全部选中
+      if (isSelectAll) {
+        this.$store.state.cartList.forEach(item => {
+          item.checked = true;
+        });
+      } else {
+        this.$store.state.cartList.forEach(item => {
+          item.checked = false;
+        });
+      } */
     }
   }
 };
@@ -45,7 +88,7 @@ export default {
   height: 44px;
   background-color: #eee;
   position: fixed;
-  bottom: 50px;
+  bottom: 48px;
   left: 0;
   box-shadow: 0 -2px 3px rgba(0, 0, 0, 0.2);
   font-size: 14px;
