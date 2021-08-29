@@ -5,7 +5,15 @@
       class="content"
       ref="scroll"
       @scroll="contentScroll"
-      :data="[topImages, goods, shop, detailInfo, paramInfo, commentInfo, recommends]"
+      :data="[
+        topImages,
+        goods,
+        shop,
+        detailInfo,
+        paramInfo,
+        commentInfo,
+        recommends,
+      ]"
       :probe-type="3"
     >
       <!-- 属性：topImages   传入值：top-images 属性和标签不区分大小写，事件可以-->
@@ -20,6 +28,7 @@
     </scroll>
     <detail-bottom-bar @addCart="addToCart" />
     <back-top @click.native="backTop" v-show="isShowBackTop" />
+    <!-- <toast :message="message" :show="show" /> -->
   </div>
 </template>
 
@@ -39,12 +48,14 @@ import GoodsList from "components/content/goods/GoodsList";
 import { debounce } from "common/utils";
 import { itemListnerMixin, backTopMixin } from "common/mixin";
 
+import { mapActions } from "vuex";
+
 import {
   getDetail,
   getRecommend,
   Goods,
   Shop,
-  GoodsParam
+  GoodsParam,
 } from "network/detail";
 
 export default {
@@ -59,7 +70,7 @@ export default {
     DetailCommentInfo,
     DetailBottomBar,
     Scroll,
-    GoodsList
+    GoodsList,
   },
   data() {
     return {
@@ -73,7 +84,9 @@ export default {
       recommends: [],
       themeTopYs: [],
       getThemeTopY: null,
-      currentIndex: 0
+      currentIndex: 0,
+      /* message: "",
+      show: false, */
     };
   },
   mixins: [itemListnerMixin, backTopMixin],
@@ -82,7 +95,7 @@ export default {
     this.iid = this.$route.params.iid;
 
     //2.根据iid请求详情数据
-    getDetail(this.iid).then(res => {
+    getDetail(this.iid).then((res) => {
       // console.log(res.result.itemInfo.topImages);
       //2.1.获取顶部的图片轮播数据
       const data = res.result;
@@ -135,7 +148,7 @@ export default {
     });
 
     //3.获取推荐数据
-    getRecommend().then(res => {
+    getRecommend().then((res) => {
       this.recommends = res.data.list;
     });
 
@@ -155,7 +168,9 @@ export default {
   destroyed() {
     this.$bus.$off("itemImgLoad", this.itemImgListener);
   },
+
   methods: {
+    ...mapActions(["addCart"]),
     imageLoad() {
       this.newRefresh();
       this.getThemeTopY();
@@ -225,9 +240,17 @@ export default {
       // console.log(product);
 
       //2.将商品添加到购物车里面
-      this.$store.dispatch("addCart", product);
-    }
-  }
+
+      /* this.$store.dispatch("addCart", product).then((res) => {
+        console.log(res);
+      }); */
+      //简写
+      this.addCart(product).then((res) => {
+        // console.log(res);
+        this.$toast.show(res);
+      });
+    },
+  },
 };
 </script>
 

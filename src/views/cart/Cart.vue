@@ -1,7 +1,7 @@
 <template>
   <div id="cart">
     <nav-bar class="nav-bar">
-      <div slot="center">购物车({{length}})</div>
+      <div slot="center">购物车({{ length }})</div>
     </nav-bar>
     <cart-list class="cart-list"></cart-list>
     <cart-bottom-bar />
@@ -20,15 +20,15 @@ export default {
   components: {
     NavBar,
     CartList,
-    CartBottomBar
+    CartBottomBar,
   },
   computed: {
     // ...mapGetters(["cartLength", "cartList"])
     ...mapGetters({
       length: "cartLength",
-      list: "cartList"
-    })
-  }
+      list: "cartList",
+    }),
+  },
 };
 </script>
 

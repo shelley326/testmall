@@ -1,9 +1,15 @@
 <template>
   <div class="bottom-menu">
-    <CheckButton class="select-all" :is-checked="isSelectAll" @click.native="checkClick"></CheckButton>
+    <CheckButton
+      class="select-all"
+      :is-checked="isSelectAll"
+      @click.native="checkClick"
+    ></CheckButton>
     <span>全选</span>
-    <span class="total-price">合计: {{totalPrice}}</span>
-    <span class="buy-product">去计算({{checkLength}})</span>
+    <span class="total-price">合计: {{ totalPrice }}</span>
+    <span class="buy-product" @click="calcClick"
+      >去计算({{ checkLength }})</span
+    >
   </div>
 </template>
 
@@ -15,7 +21,7 @@ import { mapGetters } from "vuex";
 export default {
   name: "CartBottomBar",
   components: {
-    CheckButton
+    CheckButton,
   },
   computed: {
     ...mapGetters(["cartList"]),
@@ -23,7 +29,7 @@ export default {
       return (
         "￥" +
         this.cartList
-          .filter(item => {
+          .filter((item) => {
             return item.checked;
           })
           .reduce((preValue, item) => {
@@ -33,7 +39,7 @@ export default {
       );
     },
     checkLength() {
-      return this.cartList.filter(item => item.checked).length;
+      return this.cartList.filter((item) => item.checked).length;
     },
     isSelectAll() {
       // 方法一：使用filter
@@ -48,18 +54,16 @@ export default {
         }
       }
       return true;
-    }
+    },
   },
   methods: {
     checkClick() {
       // 第一种
-      /* if (this.isSelectAll) {
-        this.cartList.forEach(item => (item.checked = false));
+      if (this.isSelectAll) {
+        this.cartList.forEach((item) => (item.checked = false));
       } else {
-        this.cartList.forEach(item => (item.checked = true));
-      } */
-
-      this.cartList.forEach(item => (item.checked = !this.isSelectAll));
+        this.cartList.forEach((item) => (item.checked = true));
+      }
 
       // 第二种
       /* // 1.判断是否有未选中的按钮
@@ -77,8 +81,13 @@ export default {
           item.checked = false;
         });
       } */
-    }
-  }
+    },
+    calcClick() {
+      if (!this.isSelectAll) {
+        this.$toast.show("请选择要购买的商品");
+      }
+    },
+  },
 };
 </script>
 
